@@ -1,0 +1,89 @@
+Test with path parameters
+sls invoke local -f getArtist --path testdata.json
+{
+    "pathParameters": {
+        "id": "509d3c05-f0ab-4ebb-b58a-928ab1f34370"
+    }
+}
+
+sls invoke local -f createAlbum --path testdata.json
+{"body":"{\"title\":\"Unia 2\",\"releaseDate\":\"2022-01-10T21:37:03.149Z\",\"artists\":[\"b21a841f-bb95-468c-9a7b-e3d8bcbac33d\",\"2cb036f3-46f6-4a95-9007-0f57714285c9\"],\"type\":\"single\"}"}
+
+sls invoke local -f createTrack --path testdata.json
+{"body":"{\"title\":\"Full Moon\",\"albumId\":\"606c6590-8916-4527-a1d8-eb27b5298857\",\"artists\":[\"b21a841f-bb95-468c-9a7b-e3d8bcbac33d\",\"2cb036f3-46f6-4a95-9007-0f57714285c9\"],\"duration\":200,\"discNumber\":1,\"trackNumber\":3}"}
+
+sls invoke local - updateAlbum --path testdata.json
+{   
+    "pathParameters": {
+        "id": "8444eaa6-63e8-4c9e-81c3-3fc9a03089ef"
+    },
+    "body":"{\"title\":\"New Title\",\"releaseDate\":\"2022-01-10T21:37:03.149Z\",\"typeId\":\"6010b9c0-a4b6-4557-aec8-5dcc2bf0fc35\"}"
+}
+
+
+SELECT * FROM "Artists" where id = '45bb1b45-2f7e-468b-944b-9ec236de6524'
+SELECT * FROM "Artists"
+SELECT * FROM "Albums"
+SELECT * FROM "AlbumType"
+SELECT * FROM "Tracks"
+SELECT * FROM "TracksArtists"
+
+/* Edit album title */
+UPDATE "Albums" SET title = 'Album Title'
+WHERE id = '878ab94e-c846-4f78-b5d2-ebc50960ba5e'
+
+
+INSERT INTO "Albums" (title, "releaseDate", "typeId") VALUES 
+('Album of Helloween', '2021-12-17T00:16:59.950-03:00', '0220c0da-d0b8-4cde-b095-740b792cc0d2')
+INSERT INTO "AlbumsArtists" ("albumId", "artistId") VALUES 
+('878ab94e-c846-4f78-b5d2-ebc50960ba5e', '72f233ef-efc2-4c9a-a6f3-a43a738031bd')
+
+
+/* Get the data of the albums of an artist */
+SELECT al.id as "albumId", al.title as "albumTitle", aa."artistId"
+FROM "Albums" al 
+INNER JOIN "AlbumsArtists" aa
+ON al.id = aa."albumId"
+WHERE (
+  aa."artistId" = ANY(ARRAY['532f7103-ffb7-43f9-9c4f-c9720126af25','8618948e-c300-40a9-84ed-ef6ebd022cee']::UUID[]) AND
+  al.title = 'Ride The Lightning'
+)
+
+/* Get all the artists of a given array of trackIds
+SELECT * FROM "Artists" WHERE id IN(
+	SELECT "artistId" FROM "TracksArtists"
+	WHERE "trackId" = ANY (ARRAY['87d6eece-b575-4ede-9bad-6afd1f0bc4da', 'e6c8c45e-9e38-470f-830b-3b70352e128c']::UUID[]) 
+	GROUP BY "artistId"
+)
+
+/* Get all the data of the album (tracks, artists) */
+SELECT 
+	al.id as "albumId", al.title, al."releaseDate" as "albumReleaseDate", al."typeId",
+	t.id as "trackId", t.title as "trackTitle", t."discNumber", t.duration, t."trackNumber",
+	ta."artistId",
+	ar.name
+FROM "Albums" al
+INNER JOIN "Tracks" t ON (t."albumId" = al.id AND al.id = 'eb75b20d-3994-4294-a0ed-eecd935a744f')
+INNER JOIN "TracksArtists" ta ON ("trackId" IN(t.id))
+INNER JOIN "Artists" ar ON (ar.id IN(ta."artistId"))
+
+// array like insert in database example
+const foundAlbum = await db.query(
+      `SELECT al.id as "albumId", al.title as "albumTitle", aa."artistId"
+        FROM "${ALBUMS}" al 
+        INNER JOIN "${ALBUMS_ARTISTS}" aa
+        ON al.id = aa."albumId"
+        WHERE (
+          aa."artistId" = ANY($1::UUID[]) AND
+          al.title = $2
+        )`,
+      [foundArtistsIds, title]
+    )
+    if(!isEmpty(foundAlbum.rows.shift())){
+      return {
+        statusCode: HttpStatus.CONFLICT,
+        body: JSON.stringify({
+          message: `Album ${title} of artists ${foundArtistsIds} already exist.`
+        })
+      }
+    }

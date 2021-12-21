@@ -1,0 +1,35 @@
+createArtist:
+  handler: ${self:custom.artistsPath}/artists.createArtist
+  events:
+    - http:
+        path: artists
+        method: post
+        cors: true
+getArtist:
+  handler: ${self:custom.artistsPath}/artists.getArtist
+  events:
+    - http:
+        path: artists/{id}
+        method: get
+        cors: true
+getArtists:
+  handler: ${self:custom.artistsPath}/artists.getArtists
+  events:
+    - http:
+        path: artists
+        method: get
+        cors: true
+updateArtist:
+  handler: ${self:custom.artistsPath}/artists.updateArtist
+  events:
+    - http:
+        path: artists/{id}
+        method: put
+        cors: true
+deleteArtist:
+  handler: ${self:custom.artistsPath}/artists.deleteArtist
+  events:
+    - http:
+        path: artists/{id}
+        method: delete
+        cors: true

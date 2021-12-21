@@ -1,0 +1,35 @@
+createTrack:
+  handler: ${self:custom.tracksPath}/tracks.createTrack
+  events:
+    - http:
+        path: tracks
+        method: post
+        cors: true
+getTrack:
+  handler: ${self:custom.tracksPath}/tracks.getTrack
+  events:
+    - http:
+        path: tracks/{id}
+        method: get
+        cors: true
+getTracks:
+  handler: ${self:custom.tracksPath}/tracks.getTracks
+  events:
+    - http:
+        path: tracks
+        method: get
+        cors: true
+updateTrack:
+  handler: ${self:custom.tracksPath}/tracks.updateTrack
+  events:
+    - http:
+        path: tracks/{id}
+        method: put
+        cors: true
+deleteTrack:
+  handler: ${self:custom.tracksPath}/tracks.deleteTrack
+  events:
+    - http:
+        path: tracks/{id}
+        method: delete
+        cors: true

@@ -1,0 +1,6 @@
+{   
+    "pathParameters": {
+        "id": "0cdca64d-8c4f-4ac6-a5b8-f78b0816a974"
+    },
+    "body":"{\"title\":\"New Title\",\"releaseDate\":\"2022-01-10T21:37:03.149Z\"}"
+}

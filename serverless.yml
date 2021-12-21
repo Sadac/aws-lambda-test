@@ -1,0 +1,22 @@
+service: demo-challenge-service
+app: demo-challenge-app
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  profile: serverless-admin
+  region: sa-east-1
+  
+
+functions:
+  - ${file(./${self:custom.albumsPath}/albums.yml)}
+  - ${file(./${self:custom.artistsPath}/artists.yml)}
+  - ${file(./${self:custom.tracksPath}/tracks.yml)}
+
+custom:
+  albumsPath: functions/src/albums 
+  artistsPath: functions/src/artists
+  tracksPath: functions/src/tracks

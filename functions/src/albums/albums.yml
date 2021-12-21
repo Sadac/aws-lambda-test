@@ -1,0 +1,35 @@
+createAlbum:
+  handler: ${self:custom.albumsPath}/albums.createAlbum
+  events:
+    - http:
+        path: albums
+        method: post
+        cors: true
+getAlbum:
+  handler: ${self:custom.albumsPath}/albums.getAlbum
+  events:
+    - http:
+        path: albums/{id}
+        method: get
+        cors: true
+getAlbums:
+  handler: ${self:custom.albumsPath}/albums.getAlbums
+  events:
+    - http:
+        path: albums
+        method: get
+        cors: true
+updateAlbum:
+  handler: ${self:custom.albumsPath}/albums.updateAlbum
+  events:
+    - http:
+        path: ${self:custom.albumsPath}/albums/{id}
+        method: put
+        cors: true
+deleteAlbum:
+  handler: ${self:custom.albumsPath}/albums.deleteAlbum
+  events:
+    - http:
+        path: albums/{id}
+        method: delete
+        cors: true
